@@ -1,0 +1,46 @@
+
+service: spring-cloud-function
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: java17
+  region: ${self:custom.region}
+  profile: kazitanvir.azad@xxxxxxxxxxxxxxx.com
+  stage: dev
+  timeout: 10
+  memorySize: 128
+  environment:
+    REGION: ${self:provider.region}
+  apiGateway:
+    restApiId: xxxxxxxxxx
+    restApiRootResourceId: xxxxxxxxxx
+  iam:
+    role: arn:aws:iam::xxxxxxxxxxxx:role/spring-jpa-cloud
+
+
+
+custom:
+  region: us-east-1
+
+
+package:
+  artifact: target/springboot-serverless-0.0.1-SNAPSHOT-aws.jar
+  individually: true
+  exclude:
+    - README.md
+    - .git/**
+    - postman
+    - .settings/**
+    - .classpath
+    - .gitignore
+    - .project
+    - .idea
+
+
+functions:
+  subscriber:
+    handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
+    timeout: 15
+    memorySize: 512
