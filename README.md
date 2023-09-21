@@ -10,6 +10,7 @@
 <li>uppercase - HTTP ANY method to change the input String to uppercase</li>
 <li>lowercase - HTTP ANY method to change the input String to lowercase</li>
 <li>reverse - HTTP ANY method to change the input String to reverse</li>
+<li>getAllProducts - HTTP GET method to invoke another lambda function internally</li>
 
 </ol>
 </pre>
