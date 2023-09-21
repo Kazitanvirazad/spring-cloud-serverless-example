@@ -1,11 +1,19 @@
 package com.cloud.springbootserverless.functions;
 
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.lambda.AWSLambda;
+import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
+import com.amazonaws.services.lambda.model.InvocationType;
+import com.amazonaws.services.lambda.model.InvokeRequest;
+import com.amazonaws.services.lambda.model.InvokeResult;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.cloud.springbootserverless.dto.Email;
 import com.cloud.springbootserverless.service.EmailService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -33,10 +41,27 @@ public class ServerlessFunctions {
 
     @Bean
     public Function<APIGatewayProxyRequestEvent, List<Email>> getEmailList() {
+        return (apiGatewayProxyRequestEvent) ->
+                !apiGatewayProxyRequestEvent.getHttpMethod().equalsIgnoreCase("GET")
+                        ? new ArrayList<>() :
+                        emailService.getEmailList();
+    }
+
+    @Bean
+    public Function<APIGatewayProxyRequestEvent, String> getAllProducts() {
         return (apiGatewayProxyRequestEvent) -> {
-            return !apiGatewayProxyRequestEvent.getHttpMethod().equalsIgnoreCase("GET")
-                    ? new ArrayList<>() :
-                    emailService.getEmailList();
+            if (!apiGatewayProxyRequestEvent.getHttpMethod().equalsIgnoreCase("GET")) {
+                return "Invalid HTTP Method";
+            }
+            Regions regions = Regions.fromName(System.getenv("REGION"));
+            AWSLambda lambda = AWSLambdaClientBuilder.standard()
+                    .withRegion(regions).build();
+            InvokeRequest invokeRequest = new InvokeRequest()
+                    .withFunctionName("lambda-dynamodb-java-dev-fetchallproducts")
+                    .withInvocationType(InvocationType.RequestResponse);
+            InvokeResult result = lambda.invoke(invokeRequest);
+            ByteBuffer payload = result.getPayload();
+            return new String(payload.array(), Charset.defaultCharset());
         };
     }
 
