@@ -10,7 +10,7 @@
 <li>uppercase - HTTP ANY method to change the input String to uppercase</li>
 <li>lowercase - HTTP ANY method to change the input String to lowercase</li>
 <li>reverse - HTTP ANY method to change the input String to reverse</li>
-<li>getAllProducts - HTTP GET method to invoke another lambda function internally
+<li>getAllProducts - HTTP GET method to invoke another lambda function internally.<br>
 For Invoking Lambda function from another Lambda, the calling/parent function
 must have an additional custom policy other than "AWSLambdaRole" and "AWSLambdaExecute" on its Role.
 The custom policy must have below settings -
